@@ -1,0 +1,47 @@
+def bellman_ford(G, s):
+    """find the shortest paths in a digraph
+
+    Arguments:
+
+    G: Type List[List[int]]. A dense directed graph in the form of a square
+        matrix. An element G[i][j] is the cost to go from node i to node j.
+
+    s: Type int. The indice of the source node whose shortest paths are to be
+        found.
+
+    Returns:
+
+    result[0]: Type List[int]. The shortest path lengths. Each element
+        result[0][i] is the shortest distance from node s to node i.
+
+    result[1]: Type List[int]. Path predecessors. Each element result[1][i] is
+        the node j immediately prior to node i in the shortest path from node s
+        to node i.
+    """
+
+    # Step 1: initialize graph
+    n = len(G)
+    dist = [999999999999999999999] * n
+    prev = [None] * n
+    dist[s] = 0              # The distance from the source to itself is, of course, zero
+
+    # Step 2: relax edges repeatedly
+    for k in range(n - 1):
+        no_change = True
+        for i in range(n):
+            for j in range(n):
+                w = G[i][j]
+                if dist[i] + w < dist[j]:
+                    no_change = False
+                    dist[j] = dist[i] + w
+                    prev[j] = i
+        if no_change:
+            break
+
+    # Step 3: check for negative-weight cycles
+    for i in range(n):
+        for j in range(n):
+            if dist[i] + G[i][j] < dist[j]:
+                raise ValueError("Graph contains a negative-weight cycle")
+
+    return (dist, prev)
